@@ -1,0 +1,77 @@
+version: '3.2'
+
+# && gunicorn config.wsgi:application --workers 4 --bind 0.0.0.0:8000 --reload
+
+services:
+  homme-web:
+    container_name: "${PROJECT_NAME}_backend_${ENV}"
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    command: bash -c '
+      python manage.py migrate 
+      && python manage.py runserver 0.0.0.0:8000
+      '
+    volumes:
+      - "./:/code"
+    environment:
+      - HOMME_DB_PORT=5432
+    ports:
+      - $WEB_PORT:8000
+    depends_on:
+      - homme-db
+
+  homme-db:
+    container_name: "${PROJECT_NAME}_postgres_${ENV}"
+    image: postgis/postgis:14-3.3
+    # restart: always
+    volumes:
+      - homme-postgres_data:/var/lib/postgres
+    environment:
+      POSTGRES_DB: "homme"
+      POSTGRES_USER: "adminuser"
+      POSTGRES_PASSWORD: "testadmin"
+    expose:
+      - $HOMME_DB_PORT:5432
+    ports:
+      - $HOMME_DB_PORT:5432
+
+  # nginx:
+  #   container_name: "${PROJECT_NAME}_nginx_${ENV}"
+  #   image: nginx:latest
+  #   volumes:
+  #     - "./:/code/homme-backend"
+  #     - "./nginx/nginx-$ENV.conf:/etc/nginx/conf.d/default.conf"
+  #   ports:
+  #     - $NGINX_PORT:80
+  #   depends_on:
+  #     - homme-web
+  #   restart: always
+  #   links:
+  #     - homme-web:homme-web
+
+  # elastic:
+  #   container_name: "${PROJECT_NAME}_elasticsearch_${ENV}"
+  #   image: docker.elastic.co/elasticsearch/elasticsearch:7.10.0
+  #   environment:
+  #     - discovery.type=single-node
+  #     - transport.host=localhost
+  #     - transport.tcp.port=9300
+  #     - http.port=9200
+  #     - http.host=0.0.0.0
+  #   ulimits:
+  #     memlock:
+  #       soft: -1
+  #       hard: -1
+  #   volumes:
+  #     - ./data/es:/usr/share/elasticsearch/data
+  #   restart: always
+  #   ports:
+  #     - $ELASTIC_PORT:9201
+  #   expose:
+  #     - 9201
+
+
+volumes:
+  homme-postgres_data:
+
