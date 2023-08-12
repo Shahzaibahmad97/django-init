@@ -66,7 +66,6 @@ class UserCreateSerializer(serializers.ModelSerializer):
         user = super(UserCreateSerializer, self).create(validated_data)
 
         user.set_password(password)
-        user.confirmation_token = generate_code(4)
         user.updated_at = timezone.now()
         user.save()
         return user
