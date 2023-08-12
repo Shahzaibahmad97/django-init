@@ -19,7 +19,7 @@
 							"formdata": [
 								{
 									"key": "email",
-									"value": "sadevtest44+7@gmail.com",
+									"value": "sadevtest44+9@gmail.com",
 									"type": "text"
 								},
 								{
@@ -52,7 +52,7 @@
 							"formdata": [
 								{
 									"key": "email",
-									"value": "sadevtest44+7@gmail.com",
+									"value": "sadevtest44+9@gmail.com",
 									"type": "text"
 								},
 								{
@@ -62,7 +62,7 @@
 								},
 								{
 									"key": "otp_code",
-									"value": "9941",
+									"value": "8373",
 									"type": "text"
 								}
 							]
@@ -166,6 +166,39 @@
 							],
 							"path": [
 								"delete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "referral",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "referral_code",
+									"value": "P2N6T7",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}users/referral",
+							"host": [
+								"{{base_url}}users"
+							],
+							"path": [
+								"referral"
 							]
 						}
 					},
@@ -322,12 +355,12 @@
 						},
 						{
 							"key": "phone",
-							"value": "+923026944689",
+							"value": "+923026944693",
 							"type": "text"
 						},
 						{
 							"key": "email",
-							"value": "sadevtest44+6@gmail.com",
+							"value": "sadevtest44+9@gmail.com",
 							"type": "text"
 						},
 						{
@@ -342,7 +375,22 @@
 						},
 						{
 							"key": "verification_token",
-							"value": "MTUwOXNhZGV2dGVzdDQ0KzZAZ21haWwuY29tOTY1NA==",
+							"value": "NDI4MXNhZGV2dGVzdDQ0KzlAZ21haWwuY29tODM3Mw==",
+							"type": "text"
+						},
+						{
+							"key": "referrer",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "salon",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "stylist",
+							"value": "1",
 							"type": "text"
 						}
 					]

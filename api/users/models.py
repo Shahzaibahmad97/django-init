@@ -52,12 +52,16 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def name(self):
-        if self.role == User.Role.ADMIN:
-            return self.admin_profile.fullname
-        elif self.role == User.Role.SALON:
-            return self.salon_profile.salon_name
-        else:
-            return self.profile.name
+        try:
+            if self.role == User.Role.ADMIN:
+                return self.admin_profile.fullname
+            elif self.role == User.Role.SALON:
+                return self.salon_profile.salon_name
+            else:
+                return self.profile.name
+        except Exception as ex:
+            print("No name: ", ex)
+            return ""
 
     @property
     def picture(self):
