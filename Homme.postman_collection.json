@@ -1,0 +1,488 @@
+{
+	"info": {
+		"_postman_id": "3214964f-58d3-4630-839e-4bb80732c78a",
+		"name": "Homme",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3825305"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "OTP send",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "sadevtest44+7@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "otp_type",
+									"value": "create",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}auth/otp/send",
+							"host": [
+								"{{base_url}}auth"
+							],
+							"path": [
+								"otp",
+								"send"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "OTP verify",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "sadevtest44+7@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "otp_type",
+									"value": "create",
+									"type": "text"
+								},
+								{
+									"key": "otp_code",
+									"value": "9941",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}auth/otp/verify",
+							"host": [
+								"{{base_url}}auth"
+							],
+							"path": [
+								"otp",
+								"verify"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "sadevtest44+7@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "123@abcD",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}auth/login",
+							"host": [
+								"{{base_url}}auth"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "refresh",
+									"value": "{{salon_refresh_token}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}auth/refresh",
+							"host": [
+								"{{base_url}}auth"
+							],
+							"path": [
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Delete",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}users/delete",
+							"host": [
+								"{{base_url}}users"
+							],
+							"path": [
+								"delete"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Salon",
+			"item": [
+				{
+					"name": "Stylist",
+					"item": [
+						{
+							"name": "Create",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{salon_access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "fullname",
+											"value": "John doe",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}salons/stylists",
+									"host": [
+										"{{base_url}}salons"
+									],
+									"path": [
+										"stylists"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{salon_access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{base_url}}salons/stylists",
+									"host": [
+										"{{base_url}}salons"
+									],
+									"path": [
+										"stylists"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Get Salons",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}salons/get_salons",
+							"host": [
+								"{{base_url}}salons"
+							],
+							"path": [
+								"get_salons"
+							],
+							"query": [
+								{
+									"key": "perPage",
+									"value": "10",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Stylists",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}salons/1/stylist",
+							"host": [
+								"{{base_url}}salons"
+							],
+							"path": [
+								"1",
+								"stylist"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "first_name",
+							"value": "shahzaib",
+							"type": "text"
+						},
+						{
+							"key": "last_name",
+							"value": "ahmad",
+							"type": "text"
+						},
+						{
+							"key": "phone",
+							"value": "+923026944689",
+							"type": "text"
+						},
+						{
+							"key": "email",
+							"value": "sadevtest44+6@gmail.com",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "123@abcD",
+							"type": "text"
+						},
+						{
+							"key": "confirm_password",
+							"value": "123@abcD",
+							"type": "text"
+						},
+						{
+							"key": "verification_token",
+							"value": "MTUwOXNhZGV2dGVzdDQ0KzZAZ21haWwuY29tOTY1NA==",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}register",
+					"host": [
+						"{{base_url}}register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register Salon",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "salon_name",
+							"value": "SA",
+							"type": "text"
+						},
+						{
+							"key": "contact_name",
+							"value": "shahzaib ahmad",
+							"type": "text"
+						},
+						{
+							"key": "phone",
+							"value": "+923026944691",
+							"type": "text"
+						},
+						{
+							"key": "email",
+							"value": "sadevtest44+8@gmail.com",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "123@abcD",
+							"type": "text"
+						},
+						{
+							"key": "confirm_password",
+							"value": "123@abcD",
+							"type": "text"
+						},
+						{
+							"key": "verification_token",
+							"value": "NzYwNHNhZGV2dGVzdDQ0KzhAZ21haWwuY29tMTcwNA==",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}register/salon",
+					"host": [
+						"{{base_url}}register"
+					],
+					"path": [
+						"salon"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "me",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{salon_access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}me",
+					"host": [
+						"{{base_url}}me"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "localhost:8000/api/",
+			"type": "string"
+		},
+		{
+			"key": "user_access_token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjkxODE1NzgzLCJpYXQiOjE2OTE3Nzg2NDMsImp0aSI6Ijg0ZTRhZWFjZjExNjQ5YWQ5OWFhYTdmZTA2OGU1OTJmIiwidXNlcl9pZCI6OCwicm9sZSI6InVzZXIifQ.eHvGrTZ6cGfDBP18m3SPKGQSGVU1sHFjfqp0ACNT9gE",
+			"type": "string"
+		},
+		{
+			"key": "user_refresh_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "salon_access_token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjkxODIxNzMzLCJpYXQiOjE2OTE3ODU3MzMsImp0aSI6IjA0YTUxNzRiNjE1NzRkYjNiMzViODE1ZWFjZjg3NzkxIiwidXNlcl9pZCI6MSwicm9sZSI6InVzZXIifQ.d8g7HjZLCajT9sMSahZWBxcyumZ12fw2CfziI84fmxU",
+			"type": "string"
+		},
+		{
+			"key": "salon_refresh_token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTY5NTM4NTczMywiaWF0IjoxNjkxNzg1NzMzLCJqdGkiOiI4ZWNlYTRiZDFjNjg0MmRiODU0MmJhZTMzZmQyNjZmZiIsInVzZXJfaWQiOjEsInJvbGUiOiJ1c2VyIn0.65Rowhtwxf7_Rox-rQ5iWk2u0NdF9tvTTzwsjGwrVWw",
+			"type": "string"
+		}
+	]
+}

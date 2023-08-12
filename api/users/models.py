@@ -48,17 +48,20 @@ class User(AbstractBaseUser, PermissionsMixin):
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=now, null=True)
 
-    confirmation_token = models.CharField(max_length=70, default=generate_code, null=True)
-
     objects = CustomUserManager()
+
+    @property
+    def name(self):
+        if self.role == User.Role.ADMIN:
+            return self.admin_profile.fullname
+        elif self.role == User.Role.SALON:
+            return self.salon_profile.salon_name
+        else:
+            return self.profile.name
 
     @property
     def picture(self):
         return self.profile_picture.url
-
-    @property
-    def is_completed(self):
-        return not self.confirmation_token
 
     def __str__(self):
         return self.email
@@ -104,7 +107,6 @@ class UserProfile(models.Model):
     @property
     def name(self):
         return f"{self.first_name} {self.last_name}"
-
 
 
 class Stylist(models.Model):

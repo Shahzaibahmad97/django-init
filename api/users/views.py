@@ -15,45 +15,45 @@ from rest_framework.response import Response
 
 from api.core.constants import DeviceType, Status
 from api.core.mixin import GenericDotsViewSet, ListDotsModelMixin
-from api.core.permissions import RoleEqualToDeviceHeader
 from api.core.serializer import SuccessResponseSerializer, UserProfileBuilderSerializer
 from api.core.utils import DotsValidationError
 from api.jwtauth.helpers import send_confirmation_email
 from api.users.models import SalonProfile, Stylist, User
-from api.users.serializers import ConfirmUserSerializer, ReturnUserMeSerializer
+from api.users.serializers import ConfirmUserSerializer, ReturnUserMeSerializer, return_profile_serializer_by_role
 from api.users.builder_serializer import StepSerializer
 
 user_confirmation_response = openapi.Response('User confirmation', SuccessResponseSerializer)
 
 
-@swagger_auto_schema(method='PATCH', request_body=StepSerializer)
+@swagger_auto_schema(method='PATCH')
 @swagger_auto_schema(method='GET')
 @api_view(['GET', 'PATCH'])
 @permission_classes([IsAuthenticated])
 def partial_update(request):
+    print(request)
     if request.method == 'PATCH':
-        profile_completed = request.user.is_completed
-        serializer = StepSerializer(data=request.data, context=dict(request=request))
-        serializer.is_valid(raise_exception=True)
-        builder_serializer_class = UserProfileBuilderSerializer
+        # profile_completed = request.user.is_completed
+        # serializer = StepSerializer(data=request.data, context=dict(request=request))
+        # serializer.is_valid(raise_exception=True)
+        # builder_serializer_class = UserProfileBuilderSerializer
 
-        builder_serializer = builder_serializer_class(
-            user_instance=request.user,
-            data=request.data,
-            step=serializer.validated_data['step'],
-            request=request
-        )
-        response = builder_serializer()
+        # builder_serializer = builder_serializer_class(
+        #     user_instance=request.user,
+        #     data=request.data,
+        #     step=serializer.validated_data['step'],
+        #     request=request
+        # )
+        # response = builder_serializer()
 
         if response is None:
             response = dict(
                 success=True,
-                message=f"step successfully updated to {request.user.register_step}"  # noqa
+                message=f"step successfully updated to "  # noqa
             )
 
         return Response(response)
 
-    serializer = ReturnUserMeSerializer(request.user, context=dict(request=request))
+    serializer = return_profile_serializer_by_role(request.user, context=dict(request=request))
     return Response(serializer.data)
 
 

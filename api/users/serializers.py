@@ -16,7 +16,6 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
-    confirmation_token = serializers.CharField(required=False, write_only=True)
     current_password = serializers.CharField(write_only=True, required=True)
     new_password = serializers.CharField(write_only=True, required=True,
                                          validators=[
@@ -30,7 +29,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields =  ('id', 'confirmation_token', 'email', 'current_password', 'new_password', 'confirm_password', 
+        fields =  ('id', 'email', 'current_password', 'new_password', 'confirm_password', 
                    'profile_picture', 'phone', 'fcm_token', 'role', )
         extra_kwargs = {'password': {'write_only': True}, 'fcm_token': {'write_only': True}}
 
@@ -111,7 +110,7 @@ class UserProfileUpdateSerializer(serializers.ModelSerializer):
 class ReturnUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'email', 'phone', )
+        fields = ('id', 'email', 'phone', 'role', 'profile_picture', 'stripe_id', )
 
 
 class ReturnUserMeSerializer(serializers.ModelSerializer):
@@ -121,11 +120,19 @@ class ReturnUserMeSerializer(serializers.ModelSerializer):
 
 
 class ReturnSalonProfileSerializer(serializers.ModelSerializer):
-    user = UserSerializer(required=True)
+    user = ReturnUserMeSerializer(required=True)
 
     class Meta:
         model = SalonProfile
         fields = ('user', 'salon_name', 'contact_name', )
+
+
+class ReturnUserProfileSerializer(serializers.ModelSerializer):
+    user = ReturnUserMeSerializer(required=True)
+
+    class Meta:
+        model = UserProfile
+        fields = ('user', 'first_name', 'last_name', 'referral_code', 'referrer', 'salon', 'stylist')
 
 
 class ConfirmUserSerializer(serializers.Serializer):  # noqa
@@ -134,3 +141,12 @@ class ConfirmUserSerializer(serializers.Serializer):  # noqa
 
 class ChangeStatusSerializer(serializers.Serializer):  # noqa
     status = serializers.ChoiceField(choices=Status.choices)
+
+
+def return_profile_serializer_by_role(user, context={}):
+    if user.role == User.Role.ADMIN:
+        return ReturnUserMeSerializer(user, context=context)
+    elif user.role == User.Role.SALON:
+        return ReturnSalonProfileSerializer(user.salon_profile, context=context)
+    else:
+        return ReturnUserProfileSerializer(user.profile, context=context)

@@ -15,7 +15,6 @@ from rest_framework.settings import api_settings
 from rest_framework.viewsets import GenericViewSet
 
 from api.core.constants import Status
-from api.core.permissions import RoleEqualToDeviceHeader
 from api.users.models import User
 from config.pagination import CustomPagination
 
@@ -97,7 +96,7 @@ class ListDotsModelMixin(RetrieveModelMixin):
 class GenericDotsViewSet(GenericViewSet):
     serializer_create_class = None
     permission_classes_by_action = {
-        'default': [IsAuthenticated, RoleEqualToDeviceHeader]
+        'default': [IsAuthenticated, ]
     }
     action_serializers = {}
     filter_backends = (filters.SearchFilter, DjangoFilterBackend)
@@ -105,7 +104,7 @@ class GenericDotsViewSet(GenericViewSet):
     document = None
     ordering = ['id']
     filter_fields = []
-    permission_classes = [IsAuthenticated, RoleEqualToDeviceHeader]
+    permission_classes = [IsAuthenticated, ]
 
     def get_document(self):
         return self.document

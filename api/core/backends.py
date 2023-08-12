@@ -10,9 +10,6 @@ from api.users.models import User
 
 class CustomJWTAuthentication(JWTAuthentication):
     def get_user_with_relations(self, user_id, request):
-        if request.device_type == DeviceType.WEB:
-            return User.objects.filter(id=user_id).first()
-
         return User.objects.filter(id=user_id).first()
 
     def authenticate(self, request):
