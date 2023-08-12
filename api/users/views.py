@@ -18,9 +18,8 @@ from api.core.mixin import GenericDotsViewSet, ListDotsModelMixin
 from api.core.serializer import SuccessResponseSerializer, UserProfileBuilderSerializer
 from api.core.utils import DotsValidationError
 from api.jwtauth.helpers import send_confirmation_email
-from api.users.models import SalonProfile, Stylist, User
-from api.users.serializers import ConfirmUserSerializer, ReturnUserMeSerializer, return_profile_serializer_by_role
-from api.users.builder_serializer import StepSerializer
+from api.users.models import SalonProfile, Stylist, User, UserProfile
+from api.users.serializers import ConfirmUserSerializer, ReferralUserSerializer, ReturnShortUserProfileSerializer, ReturnUserMeSerializer, return_profile_serializer_by_role
 
 user_confirmation_response = openapi.Response('User confirmation', SuccessResponseSerializer)
 
@@ -67,6 +66,17 @@ class UserViewSets(GenericDotsViewSet):
     def delete(self, request, *args, **kwargs):
         request.user.delete()
         return Response(dict(success=True, message=f"User with email '{request.user.email}' is deleted", ))
+    
+    @action(detail=False, methods=['GET'], permission_classes=[AllowAny], serializer_class=ReferralUserSerializer)
+    def referral(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        referrer = UserProfile.objects.filter(referral_code=serializer.validated_data['referral_code']).first()
+        if not referrer:
+            raise DotsValidationError({'referral_code': "Invalid referral code given."})
+        
+        return Response(ReturnShortUserProfileSerializer(instance=referrer).data)
 
     def get_queryset(self):
         # if self.request.user.is_anonymous:

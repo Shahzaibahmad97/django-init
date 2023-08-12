@@ -132,7 +132,13 @@ class ReturnUserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ('user', 'first_name', 'last_name', 'referral_code', 'referrer', 'salon', 'stylist')
+        fields = ('id', 'user', 'first_name', 'last_name', 'referral_code', 'referrer', 'salon', 'stylist')
+
+
+class ReturnShortUserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ('id', 'first_name', 'last_name', )
 
 
 class ConfirmUserSerializer(serializers.Serializer):  # noqa
@@ -141,6 +147,10 @@ class ConfirmUserSerializer(serializers.Serializer):  # noqa
 
 class ChangeStatusSerializer(serializers.Serializer):  # noqa
     status = serializers.ChoiceField(choices=Status.choices)
+
+
+class ReferralUserSerializer(serializers.Serializer):
+    referral_code = serializers.CharField()
 
 
 def return_profile_serializer_by_role(user, context={}):
