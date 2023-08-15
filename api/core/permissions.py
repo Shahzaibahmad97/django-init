@@ -18,7 +18,7 @@ class IsUser(permissions.BasePermission):
     def has_permission(self, request, view):
         if not getattr(request.user, 'role', False):
             return False
-        return request.user.role == User.Role.USER
+        return request.user.role == User.Role.USER.value
 
 
 class IsSalon(permissions.BasePermission):
@@ -27,7 +27,6 @@ class IsSalon(permissions.BasePermission):
     def has_permission(self, request, view):
         if not getattr(request.user, 'role', False):
             return False
-        print(request.user.role)
         return request.user.role == User.Role.SALON.value
 
 

@@ -69,7 +69,7 @@ class UserViewSets(GenericDotsViewSet):
     
     @action(detail=False, methods=['GET'], permission_classes=[AllowAny], serializer_class=ReferralUserSerializer)
     def referral(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        serializer = self.get_serializer(data=request.GET)
         serializer.is_valid(raise_exception=True)
 
         referrer = UserProfile.objects.filter(referral_code=serializer.validated_data['referral_code']).first()
