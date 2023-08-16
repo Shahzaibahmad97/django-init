@@ -29,7 +29,6 @@ user_confirmation_response = openapi.Response('User confirmation', SuccessRespon
 @api_view(['GET', 'PATCH'])
 @permission_classes([IsAuthenticated])
 def partial_update(request):
-    print(request)
     if request.method == 'PATCH':
         # profile_completed = request.user.is_completed
         # serializer = StepSerializer(data=request.data, context=dict(request=request))

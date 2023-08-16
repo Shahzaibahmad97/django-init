@@ -6,6 +6,7 @@ from api.core.utils import DotsValidationError
 from api.core.validator import PasswordValidator
 from api.core.constants import Status
 from api.core import helper
+from api.salons.serializers import ReturnShortSalonProfileSerializer, ReturnStylistSerializer
 from api.users.models import Stylist, UserProfile, SalonProfile, User
 
 
@@ -129,6 +130,8 @@ class ReturnSalonProfileSerializer(serializers.ModelSerializer):
 
 class ReturnUserProfileSerializer(serializers.ModelSerializer):
     user = ReturnUserMeSerializer(required=True)
+    salon = ReturnShortSalonProfileSerializer()
+    stylist = ReturnStylistSerializer()
 
     class Meta:
         model = UserProfile
