@@ -19,7 +19,7 @@ from api.core.serializer import SuccessResponseSerializer, UserProfileBuilderSer
 from api.core.utils import DotsValidationError
 from api.jwtauth.helpers import send_confirmation_email
 from api.users.models import SalonProfile, Stylist, User, UserProfile
-from api.users.serializers import ConfirmUserSerializer, ReferralUserSerializer, ReturnShortUserProfileSerializer, ReturnUserMeSerializer, return_profile_serializer_by_role
+from api.users.serializers import ConfirmUserSerializer, ReferralUserSerializer, ReturnShortUserProfileSerializer, ReturnUserMeSerializer, get_update_profile_serializer_class_by_role, get_return_profile_serializer_by_role
 
 user_confirmation_response = openapi.Response('User confirmation', SuccessResponseSerializer)
 
@@ -30,28 +30,13 @@ user_confirmation_response = openapi.Response('User confirmation', SuccessRespon
 @permission_classes([IsAuthenticated])
 def partial_update(request):
     if request.method == 'PATCH':
-        # profile_completed = request.user.is_completed
-        # serializer = StepSerializer(data=request.data, context=dict(request=request))
-        # serializer.is_valid(raise_exception=True)
-        # builder_serializer_class = UserProfileBuilderSerializer
+        serializer_class = get_update_profile_serializer_class_by_role(request.user)
+        serializer = serializer_class(instance=request.user.my_profile, data=request.data, context=dict(request=request), partial=True)
+        serializer.is_valid(raise_exception=True)
 
-        # builder_serializer = builder_serializer_class(
-        #     user_instance=request.user,
-        #     data=request.data,
-        #     step=serializer.validated_data['step'],
-        #     request=request
-        # )
-        # response = builder_serializer()
-
-        if response is None:
-            response = dict(
-                success=True,
-                message=f"step successfully updated to "  # noqa
-            )
-
-        return Response(response)
-
-    serializer = return_profile_serializer_by_role(request.user, context=dict(request=request))
+        instance = serializer.save()
+    
+    serializer = get_return_profile_serializer_by_role(request.user, context=dict(request=request))
     return Response(serializer.data)
 
 

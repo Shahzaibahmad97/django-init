@@ -4,6 +4,7 @@ fcmintegration+firebase-adminsdk+.json
 
 # ignore static and media files
 staticfiles
+mediafiles
 
 # ignore environment files
 *.env

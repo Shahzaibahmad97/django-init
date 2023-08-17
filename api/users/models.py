@@ -62,6 +62,19 @@ class User(AbstractBaseUser, PermissionsMixin):
         except Exception as ex:
             print("No name: ", ex)
             return ""
+    
+    @property
+    def my_profile(self):
+        try:
+            if self.role == User.Role.ADMIN:
+                return self.admin_profile
+            elif self.role == User.Role.SALON:
+                return self.salon_profile
+            else:
+                return self.profile
+        except Exception as ex:
+            print("No profile created yet: ", ex)
+            return None
 
     @property
     def picture(self):

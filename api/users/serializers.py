@@ -17,8 +17,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
-    current_password = serializers.CharField(write_only=True, required=True)
-    new_password = serializers.CharField(write_only=True, required=True,
+    current_password = serializers.CharField(write_only=True, required=False)
+    new_password = serializers.CharField(write_only=True, required=False,
                                          validators=[
                                              PasswordValidator.one_symbol,
                                              PasswordValidator.lower_letter,
@@ -45,65 +45,77 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
         if validated_data.get('email') == instance.email:
             del validated_data['email']
+        print("***** hiiii ******")
 
         password = validated_data.pop('current_password', None)
         new_password = validated_data.pop('new_password', None)
         confirm_password = validated_data.pop('confirm_password', None)
 
-        if not instance.check_password(password):
-            raise DotsValidationError({"current_password": ["Invalid password"]})
+        if password:
+            if not instance.check_password(password):
+                raise DotsValidationError({"current_password": ["Invalid password"]})
 
-        if new_password:
-            if compare_digest(password, new_password):
-                raise DotsValidationError(
-                    {"new_password": ["You new password should be different from the current one"]})
+            if new_password:
+                if compare_digest(password, new_password):
+                    raise DotsValidationError(
+                        {"new_password": ["You new password should be different from the current one"]})
 
-            if confirm_password != new_password:
-                raise DotsValidationError({"confirm_password": ["Passwords does not match"]})
+                if confirm_password != new_password:
+                    raise DotsValidationError({"confirm_password": ["Passwords does not match"]})
 
-            instance.set_password(new_password)
-            instance.save()
+                instance.set_password(new_password)
+                instance.save()
 
-        profile = super(UserSerializer, self).update(instance, validated_data)
+        profile = super().update(instance, validated_data)
         return profile
 
 
-class UserProfileUpdateSerializer(serializers.ModelSerializer):
-    current_password = serializers.CharField(write_only=True, required=True)
-    new_password = serializers.CharField(write_only=True, required=True)
-    confirm_password = serializers.CharField(write_only=True, required=False)
+class AdminProfileUpdateSerializer(UserUpdateSerializer):
     profile_picture = serializers.ImageField(write_only=True, required=False)
-    email = serializers.EmailField()
     phone = serializers.CharField(required=False)
 
     class Meta:
         model = UserProfile
-        fields = ('phone', 'email', 'current_password', 'new_password', 'confirm_password', 'first_name', 'last_name', )
+        fields = ('phone', 'email', 'current_password', 'new_password', 'confirm_password', 'profile_picture', 'fullname', )
     
     def update(self, instance, validated_data):
-        user_data = {
-            'email': validated_data.get('email', instance.user.email),
-            'profile_picture': validated_data.get('profile_picture', instance.user.profile_picture),
-            'phone': validated_data.get('phone', instance.user.phone),
-        }
+        instance.fullname = validated_data.get('fullname', instance.fullname)
+        instance.user = UserUpdateSerializer.update(UserUpdateSerializer(), instance.user, validated_data)
+        instance.save()
+        return instance
 
-        current_pass = helper.pop_key(validated_data, 'current_password')
-        new_pass = helper.pop_key(validated_data, 'new_password')
-        confirm_pass = helper.pop_key(validated_data, 'confirm_password')
 
-        if current_pass and new_pass:
-            if not confirm_pass:
-                raise DotsValidationError({"confirm_password": ["Confirm Password is not provided"]})
+class SalonProfileUpdateSerializer(UserUpdateSerializer):
+    profile_picture = serializers.ImageField(write_only=True, required=False)
+    phone = serializers.CharField(required=False)
 
-            user_data['current_password'] = current_pass
-            user_data['new_password'] = new_pass
-            user_data['confirm_password'] = confirm_pass
+    class Meta:
+        model = UserProfile
+        fields = ('phone', 'email', 'current_password', 'new_password', 'confirm_password', 'profile_picture', 'salon_name', 'contact_name', )
+    
+    def update(self, instance, validated_data):
+        instance.salon_name = validated_data.get('salon_name', instance.salon_name)
+        instance.contact_name = validated_data.get('contact_name', instance.contact_name)
+        instance.user = UserUpdateSerializer.update(UserUpdateSerializer(), instance.user, validated_data)
+        instance.save()
+        return instance
 
-        user = UserUpdateSerializer.update(UserUpdateSerializer(), instance=instance.user, validated_data=user_data)
 
-        instance.first_name = validated_data.get('first_name', instance.first_name)
-        instance.last_name = validated_data.get('last_name', instance.last_name)
+class UserProfileUpdateSerializer(UserUpdateSerializer):
+    profile_picture = serializers.ImageField(write_only=True, required=False)
+    phone = serializers.CharField(required=False)
 
+    class Meta:
+        model = UserProfile
+        fields = ('current_password', 'new_password', 'confirm_password', 'profile_picture', 'phone', 
+                  'first_name', 'last_name', 'salon', 'stylist')
+    
+    def update(self, instance, validated_data):
+        instance.first_name = validated_data.pop('first_name', instance.first_name)
+        instance.last_name = validated_data.pop('last_name', instance.last_name)
+        instance.salon = validated_data.pop('salon', instance.salon)
+        instance.stylist = validated_data.pop('stylist', instance.stylist)
+        instance.user = UserUpdateSerializer.update(UserUpdateSerializer(), instance.user, validated_data)
         instance.save()
         return instance
 
@@ -156,7 +168,16 @@ class ReferralUserSerializer(serializers.Serializer):
     referral_code = serializers.CharField()
 
 
-def return_profile_serializer_by_role(user, context={}):
+def get_update_profile_serializer_class_by_role(user):
+    if user.role == User.Role.ADMIN:
+        return AdminProfileUpdateSerializer
+    elif user.role == User.Role.SALON:
+        return SalonProfileUpdateSerializer
+    else:
+        return UserProfileUpdateSerializer
+
+
+def get_return_profile_serializer_by_role(user, context={}):
     if user.role == User.Role.ADMIN:
         return ReturnUserMeSerializer(user, context=context)
     elif user.role == User.Role.SALON:
