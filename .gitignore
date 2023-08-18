@@ -4,7 +4,8 @@ fcmintegration+firebase-adminsdk+.json
 
 # ignore static and media files
 staticfiles
-mediafiles
+mediafiles/*
+!mediafiles/default-profile.png
 
 # ignore environment files
 *.env
