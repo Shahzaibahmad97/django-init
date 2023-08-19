@@ -1,6 +1,7 @@
 from django.shortcuts import render
 
 from rest_framework import filters
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.mixins import ListModelMixin
 from api.core.mixin import GenericDotsViewSet, ListDotsModelMixin
 
@@ -27,4 +28,5 @@ class ProductViewSets(GenericDotsViewSet, ListModelMixin):
     ordering_fields = '__all__'
     search_fields = ['title', 'short_description', 'category__name', ]
     filterset_fields = product_filterset_fields
+    permission_classes = [IsAuthenticated]
 
