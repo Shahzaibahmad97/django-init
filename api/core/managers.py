@@ -21,12 +21,14 @@ class CustomUserManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, password, **extra_fields):
+        from api.users.models import User
         """
         Create and save a SuperUser with the given email and password.
         """
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_active', True)
+        extra_fields.setdefault('role', User.Role.ADMIN)
 
         if extra_fields.get('is_staff') is not True:
             raise ValueError(_('Superuser must have is_staff=True.'))

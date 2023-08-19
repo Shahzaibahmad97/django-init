@@ -7,7 +7,7 @@ from api.core.validator import PasswordValidator
 from api.core.constants import Status
 from api.core import helper
 from api.salons.serializers import ReturnShortSalonProfileSerializer, ReturnStylistSerializer
-from api.users.models import Stylist, UserProfile, SalonProfile, User
+from api.users.models import AdminProfile, Stylist, UserProfile, SalonProfile, User
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -132,6 +132,14 @@ class ReturnUserMeSerializer(serializers.ModelSerializer):
         fields = ('id', 'email', 'phone', 'profile_picture', 'stripe_id', 'updated_at', )
 
 
+class ReturnAdminProfileSerializer(serializers.ModelSerializer):
+    user = ReturnUserMeSerializer(required=True)
+
+    class Meta:
+        model = AdminProfile
+        fields = ('user', 'fullname', )
+
+
 class ReturnSalonProfileSerializer(serializers.ModelSerializer):
     user = ReturnUserMeSerializer(required=True)
 
@@ -179,8 +187,8 @@ def get_update_profile_serializer_class_by_role(user):
 
 def get_return_profile_serializer_by_role(user, context={}):
     if user.role == User.Role.ADMIN:
-        return ReturnUserMeSerializer(user, context=context)
+        return ReturnAdminProfileSerializer(user.profile, context=context)
     elif user.role == User.Role.SALON:
-        return ReturnSalonProfileSerializer(user.salon_profile, context=context)
+        return ReturnSalonProfileSerializer(user.profile, context=context)
     else:
         return ReturnUserProfileSerializer(user.profile, context=context)

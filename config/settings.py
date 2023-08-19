@@ -69,6 +69,10 @@ APPS = [
     'api.jwtauth',
     'api.users',
     'api.salons',
+    'api.categories',
+    'api.product_types',
+    'api.vendors',
+    'api.products',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_INSTALLED_APP + APPS

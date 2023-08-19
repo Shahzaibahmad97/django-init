@@ -6,6 +6,8 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.mixins import ListModelMixin
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from api.categories.models import Category
+from api.categories.serializers import CategorySerializer
 
 from api.core.helper import date_range
 import datetime
@@ -14,8 +16,12 @@ from api.core.mixin import DotsModelViewSet, GenericDotsViewSet, RetrieveDotsMod
 from api.core.permissions import IsAdmin
 from api.core.serializer import SuccessResponseSerializer
 from api.core.utils import DotsValidationError
+from api.product_types.models import ProductType
+from api.product_types.serializers import ProductTypeSerializer
 from api.users.builder_serializer import StepPersonalInformationSerializer
 from api.users.models import User
+from api.vendors.models import Vendor
+from api.vendors.serializers import VendorSerializer
 
 
 class AdminModelViewSet(DotsModelViewSet):
@@ -57,3 +63,23 @@ class AdminUserViewSets(GenericDotsViewSet, ListModelMixin, RetrieveDotsModelMix
     def get_queryset(self):
         return super().get_queryset()
 
+
+class AdminCategoryViewSets(AdminModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    search_fields = ['name', ]
+    filter_fields = ['name', ]
+
+
+class AdminProductTypeViewSets(AdminModelViewSet):
+    queryset = ProductType.objects.all()
+    serializer_class = ProductTypeSerializer
+    search_fields = ['name', ]
+    filter_fields = ['name', ]
+
+
+class AdminVendorViewSets(AdminModelViewSet):
+    queryset = Vendor.objects.all()
+    serializer_class = VendorSerializer
+    search_fields = ['name', ]
+    filter_fields = ['name', ]

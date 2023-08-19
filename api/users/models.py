@@ -43,6 +43,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     is_staff = models.BooleanField(default=False)
     is_blocked = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(default=timezone.now)
@@ -58,13 +59,13 @@ class User(AbstractBaseUser, PermissionsMixin):
             elif self.role == User.Role.SALON:
                 return self.salon_profile.salon_name
             else:
-                return self.profile.name
+                return self.user_profile.name
         except Exception as ex:
             print("No name: ", ex)
             return ""
     
     @property
-    def my_profile(self):
+    def profile(self):
         try:
             if self.role == User.Role.ADMIN:
                 return self.admin_profile
@@ -110,7 +111,7 @@ class SalonProfile(models.Model):
 
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user_profile')
 
     first_name = models.CharField(max_length=190)
     last_name = models.CharField(max_length=190)

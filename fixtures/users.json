@@ -1,0 +1,24 @@
+[
+    {
+        "model": "users.user",
+        "pk": 1,
+        "fields": {
+            "password": "pbkdf2_sha256$600000$pv5j2wzRVXGdMVJtdWN8G3$U+0jceJS9tCnu9Sx6gKDcbO0KA3jaNYmNTM5VT/Zl/4=",
+            "last_login": null,
+            "email": "sadevtest44+homme-admin@gmail.com",
+            "phone": "",
+            "role": "admin",
+            "profile_picture": "default-profile.png",
+            "fcm_token": "",
+            "stripe_id": "cus_OTeMuufV2UBa2m",
+            "is_staff": true,
+            "is_blocked": false,
+            "is_active": true,
+            "is_superuser": true,
+            "created_at": "2023-08-19T04:46:35.885Z",
+            "updated_at": "2023-08-19T04:46:35.885Z",
+            "groups": [],
+            "user_permissions": []
+        }
+    }
+]

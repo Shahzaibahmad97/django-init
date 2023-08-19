@@ -1,0 +1,10 @@
+[
+    {
+        "model": "users.adminprofile",
+        "pk": 1,
+        "fields": {
+            "user": 1,
+            "fullname": "Homme Admin"
+        }
+    }
+]
