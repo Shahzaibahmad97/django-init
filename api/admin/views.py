@@ -7,21 +7,18 @@ from rest_framework.mixins import ListModelMixin
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from api.categories.models import Category
-from api.categories.serializers import CategorySerializer
 
 from api.core.helper import date_range
 import datetime
-from api.admin.serializers import AdminUserSerializer
-from api.core.mixin import DotsModelViewSet, GenericDotsViewSet, RetrieveDotsModelMixin, DestroyDotsModelMixin
+from api.admin.serializers import AdminProductImageSerializer, AdminUserSerializer, AdminProductTypeSerializer, AdminCategorySerializer, AdminVendorSerializer, AdminProductSerializer, ReturnAdminProductSerializer
+from api.core.mixin import DotsModelViewSet, GenericDotsViewSet, RetrieveDotsModelMixin, DestroyDotsModelMixin, UpdateDotsModelMixin
 from api.core.permissions import IsAdmin
 from api.core.serializer import SuccessResponseSerializer
 from api.core.utils import DotsValidationError
 from api.product_types.models import ProductType
-from api.product_types.serializers import ProductTypeSerializer
-from api.users.builder_serializer import StepPersonalInformationSerializer
+from api.products.models import Product, ProductImage
 from api.users.models import User
 from api.vendors.models import Vendor
-from api.vendors.serializers import VendorSerializer
 
 
 class AdminModelViewSet(DotsModelViewSet):
@@ -55,10 +52,10 @@ class AdminUserViewSets(GenericDotsViewSet, ListModelMixin, RetrieveDotsModelMix
         user.save(update_fields=['is_blocked'])
         return Response({"success": True, "message": "User was successfully blocked"})
 
-    @action(detail=True, methods=['GET'], serializer_class=StepPersonalInformationSerializer,
-            url_path='personal-information')
-    def personal_information(self, request, *args, **kwargs):
-        return super().retrieve(request, *args, **kwargs)
+    # @action(detail=True, methods=['GET'], serializer_class=StepPersonalInformationSerializer,
+    #         url_path='personal-information')
+    # def personal_information(self, request, *args, **kwargs):
+    #     return super().retrieve(request, *args, **kwargs)
 
     def get_queryset(self):
         return super().get_queryset()
@@ -66,20 +63,39 @@ class AdminUserViewSets(GenericDotsViewSet, ListModelMixin, RetrieveDotsModelMix
 
 class AdminCategoryViewSets(AdminModelViewSet):
     queryset = Category.objects.all()
-    serializer_class = CategorySerializer
+    serializer_class = AdminCategorySerializer
     search_fields = ['name', ]
     filter_fields = ['name', ]
 
 
 class AdminProductTypeViewSets(AdminModelViewSet):
     queryset = ProductType.objects.all()
-    serializer_class = ProductTypeSerializer
+    serializer_class = AdminProductTypeSerializer
     search_fields = ['name', ]
     filter_fields = ['name', ]
 
 
 class AdminVendorViewSets(AdminModelViewSet):
     queryset = Vendor.objects.all()
-    serializer_class = VendorSerializer
+    serializer_class = AdminVendorSerializer
     search_fields = ['name', ]
     filter_fields = ['name', ]
+
+
+class AdminProductViewSets(AdminModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class = ReturnAdminProductSerializer
+    serializer_create_class = AdminProductSerializer
+    search_fields = ['title', 'short_description', 'category__name', ]
+    filter_fields = ['title', 'short_description', 'category__name', 'product_type__name', 'vendor__name']
+
+    def perform_create(self, serializer):
+        serializer.validated_data['created_by'] = self.request.user
+        return super().perform_create(serializer)
+
+
+class AdminProductImageViewSet(AdminModelViewSet):
+    queryset = ProductImage.objects.all()
+    serializer_class = AdminProductImageSerializer
+    filter_fields = ['product_id']
+

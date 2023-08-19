@@ -2,6 +2,7 @@ from rest_framework import status
 from django.conf import settings
 from django.db import models
 from django.utils.timezone import now
+from django.utils.translation import gettext as _
 
 
 class CreatedByModel(models.Model):
@@ -60,6 +61,19 @@ class CharFieldSizes():
     XX_LARGE = 250
     XXX_LARGE = 500
     MAX = 5000
+
+
+class LengthUnits(models.TextChoices):
+        INCHES = 'in', _('Inches')
+        CENTIMETERS = 'cm', _('Centimeters')
+        FEET = 'ft', _('Feet')
+        METERS = 'm', _('Meters')
+    
+class WeightUnits(models.TextChoices):
+    POUNDS = 'lb', _('Pounds')
+    KILOGRAMS = 'kg', _('Kilograms')
+    OUNCES = 'oz', _('Ounces')
+    GRAMS = 'g', _('Grams')
 
 
 class MediaTypes():

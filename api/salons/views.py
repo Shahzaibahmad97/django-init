@@ -41,10 +41,10 @@ class StylistViewSets(DotsModelViewSet):
     permission_classes = [IsSalon]
 
     def perform_create(self, serializer):
-        serializer.validated_data['salon'] = self.request.user.salon_profile
+        serializer.validated_data['salon'] = self.request.user.profile
         return super().perform_create(serializer)
 
     def get_queryset(self):
         queryset = super().get_queryset()
         
-        return queryset.filter(salon_id=self.request.user.salon_profile.id)
+        return queryset.filter(salon_id=self.request.user.profile.id)

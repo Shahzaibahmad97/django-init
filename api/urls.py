@@ -7,6 +7,7 @@ from api.salons.views import SalonViewSets, StylistViewSets
 from api.product_types.views import ProductTypeViewSet
 from api.categories.views import CategoryViewSet
 from api.vendors.views import VendorViewSet
+from api.products.views import ProductViewSets
 
 
 router = DefaultRouter(trailing_slash=False)
@@ -18,6 +19,7 @@ router.register(r'salons', SalonViewSets, basename='salons')
 router.register(r'product-types', ProductTypeViewSet, basename='product_types')
 router.register(r'categories', CategoryViewSet, basename='categories')
 router.register(r'vendors', VendorViewSet, basename='vendors')
+router.register(r'products', ProductViewSets, basename='products')
 
 
 urlpatterns = router.urls + [
