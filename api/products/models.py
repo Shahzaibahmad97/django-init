@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.db import models
 
 from api.core.models import BaseModel, CreatedByModel, LengthUnits, WeightUnits
@@ -31,6 +32,14 @@ class Product(BaseModel, CreatedByModel):
     class Meta:
         ordering = ['id']
         db_table = 'products'
+    
+    @property
+    def reward_points(self):
+        return 25
+    
+    @property
+    def discounted_price(self):
+        return float(self.price) * 0.9
 
 
 class ProductImage(BaseModel):
