@@ -72,7 +72,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             elif self.role == User.Role.SALON:
                 return self.salon_profile
             else:
-                return self.profile
+                return self.user_profile
         except Exception as ex:
             print("No profile created yet: ", ex)
             return None
