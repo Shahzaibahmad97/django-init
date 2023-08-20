@@ -31,7 +31,7 @@ user_confirmation_response = openapi.Response('User confirmation', SuccessRespon
 def partial_update(request):
     if request.method == 'PATCH':
         serializer_class = get_update_profile_serializer_class_by_role(request.user)
-        serializer = serializer_class(instance=request.user.my_profile, data=request.data, context=dict(request=request), partial=True)
+        serializer = serializer_class(instance=request.user.profile, data=request.data, context=dict(request=request), partial=True)
         serializer.is_valid(raise_exception=True)
 
         instance = serializer.save()
