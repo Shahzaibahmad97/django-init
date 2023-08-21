@@ -23,7 +23,7 @@ class ReturnProductListingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['title', 'short_description', 'reward_points', 'price', 'discounted_price', 'images', 'category']
+        fields = ['id', 'title', 'short_description', 'reward_points', 'price', 'discounted_price', 'images', 'category']
 
 
 class ReturnProductSerializer(serializers.ModelSerializer):
@@ -32,6 +32,6 @@ class ReturnProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['title', 'short_description', 'description', 'reward_points', 'price', 'discounted_price', 
+        fields = ['id', 'title', 'short_description', 'description', 'reward_points', 'price', 'discounted_price', 
                   'length', 'width', 'height', 'length_unit', 'weight', 'weight_unit', 'images', 'category']
 
