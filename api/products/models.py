@@ -35,7 +35,7 @@ class Product(BaseModel, CreatedByModel):
     
     @property
     def reward_points(self):
-        return 25
+        return 250
     
     @property
     def discounted_price(self):

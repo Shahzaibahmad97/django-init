@@ -54,6 +54,7 @@ class DecimalSizes():
 
 
 class CharFieldSizes():
+    EXTRA_SMALL = 10
     SMALL = 50
     MEDIUM = 100
     LARGE = 150

@@ -9,12 +9,15 @@ from api.categories.views import CategoryViewSet
 from api.vendors.views import VendorViewSet
 from api.products.views import ProductViewSets
 
+from api.rewards.views import RewardViewSets
 from api.support.views import FeedbackViewSets, ContactUsViewSets
 
 
 router = DefaultRouter(trailing_slash=False)
 router.register(r'register', RegistrationViewSet, basename='register')
+router.register(r'users/rewards', RewardViewSets, basename='user_rewards')
 router.register(r'users', UserViewSets, basename='users')
+
 router.register(r'salons/stylists', StylistViewSets, basename='stylists')
 router.register(r'salons', SalonViewSets, basename='salons')
 
