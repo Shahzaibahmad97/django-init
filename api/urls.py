@@ -9,6 +9,8 @@ from api.categories.views import CategoryViewSet
 from api.vendors.views import VendorViewSet
 from api.products.views import ProductViewSets
 
+from api.support.views import FeedbackViewSets, ContactUsViewSets
+
 
 router = DefaultRouter(trailing_slash=False)
 router.register(r'register', RegistrationViewSet, basename='register')
@@ -21,6 +23,8 @@ router.register(r'categories', CategoryViewSet, basename='categories')
 router.register(r'vendors', VendorViewSet, basename='vendors')
 router.register(r'products', ProductViewSets, basename='products')
 
+router.register(r'contact-us', ContactUsViewSets, basename='contact_us')
+router.register(r'feedback', FeedbackViewSets, basename='feedback')
 
 urlpatterns = router.urls + [
     path('me', partial_update, name='partial_update'),

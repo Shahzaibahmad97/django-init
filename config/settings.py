@@ -73,6 +73,7 @@ APPS = [
     'api.product_types',
     'api.vendors',
     'api.products',
+    'api.support',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_INSTALLED_APP + APPS
