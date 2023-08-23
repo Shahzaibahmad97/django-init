@@ -1,7 +1,8 @@
 from hmac import compare_digest
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from api.core.utils import DotsValidationError
+from django.conf import settings
+from api.core.utils import DotsValidationError, generate_qr_code
 
 from api.core.validator import PasswordValidator
 from api.core.constants import Status
@@ -153,9 +154,19 @@ class ReturnUserProfileSerializer(serializers.ModelSerializer):
     salon = ReturnShortSalonProfileSerializer()
     stylist = ReturnStylistSerializer()
 
+    referral_qr = serializers.SerializerMethodField()
+
     class Meta:
         model = UserProfile
-        fields = ('id', 'user', 'first_name', 'last_name', 'referral_code', 'referrer', 'salon', 'stylist')
+        fields = ('id', 'user', 'first_name', 'last_name', 'referral_code', 'referrer', 'salon', 'stylist', 'referral_qr', )
+
+    def get_referral_qr(self, obj):
+        try:
+            referral_url = f'{settings.BASE_URL_FE}/register?type={obj.user.role}&referral_code={obj.referral_code}'
+            return generate_qr_code(referral_url)
+        except Exception as ex:
+            print(ex)
+            return None
 
 
 class ReturnShortUserProfileSerializer(serializers.ModelSerializer):

@@ -1,3 +1,7 @@
+import base64
+from io import BytesIO
+import qrcode
+
 from django.db.models import Subquery
 from django.utils.translation import gettext as _
 from rest_framework import status
@@ -53,3 +57,24 @@ def custom_exception_handler(exc, context):
 
 class ArraySubquery(Subquery):  # noqa
     template = 'ARRAY(%(subquery)s)'
+
+
+def generate_qr_code(data, return_base64=True):
+    # Generate QR code
+    qr = qrcode.QRCode(
+        version=1,  # QR code version (1 to 40)
+        error_correction=qrcode.constants.ERROR_CORRECT_L,  # Error correction level
+        box_size=10,  # Size of each box in pixels
+        border=4,     # Border size in boxes
+    )
+    qr.add_data(data)
+    qr.make(fit=True)
+
+    # Create an image from the QR code instance
+    img = qr.make_image(fill_color="black", back_color="white")
+    if return_base64:
+        buffered = BytesIO()
+        img.save(buffered, format="PNG")
+        qr = base64.b64encode(buffered.getvalue()).decode("utf-8")
+
+    return qr
