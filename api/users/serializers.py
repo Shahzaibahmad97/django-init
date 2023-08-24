@@ -7,8 +7,7 @@ from api.core.utils import DotsValidationError, generate_qr_code
 from api.core.validator import PasswordValidator
 from api.core.constants import Status
 from api.core import helper
-from api.salons.serializers import ReturnShortSalonProfileSerializer, ReturnStylistSerializer
-from api.users.models import AdminProfile, Stylist, UserProfile, SalonProfile, User
+from api.users.models import AdminProfile, Stylist, StylistRequest, UserProfile, SalonProfile, User
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -109,16 +108,28 @@ class UserProfileUpdateSerializer(UserUpdateSerializer):
     class Meta:
         model = UserProfile
         fields = ('current_password', 'new_password', 'confirm_password', 'profile_picture', 'phone', 
-                  'first_name', 'last_name', 'salon', 'stylist')
+                  'first_name', 'last_name', 'salon', )
     
     def update(self, instance, validated_data):
         instance.first_name = validated_data.pop('first_name', instance.first_name)
         instance.last_name = validated_data.pop('last_name', instance.last_name)
         instance.salon = validated_data.pop('salon', instance.salon)
-        instance.stylist = validated_data.pop('stylist', instance.stylist)
         instance.user = UserUpdateSerializer.update(UserUpdateSerializer(), instance.user, validated_data)
         instance.save()
         return instance
+
+
+# salons and stylists serializers needed in link for user profiles
+class ReturnShortSalonProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SalonProfile
+        fields = ('id', 'salon_name', 'contact_name', )
+
+
+class ReturnStylistSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Stylist
+        fields = ('id', 'fullname', )
 
 
 class ReturnUserSerializer(serializers.ModelSerializer):
@@ -203,3 +214,28 @@ def get_return_profile_serializer_by_role(user, context={}):
         return ReturnSalonProfileSerializer(user.profile, context=context)
     else:
         return ReturnUserProfileSerializer(user.profile, context=context)
+
+
+# salons and stylists related serializers are below
+class StylistSerializer(serializers.ModelSerializer):
+    salon = serializers.IntegerField(required=False)
+
+    class Meta:
+        model = Stylist
+        fields = '__all__'
+
+
+class StylistRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StylistRequest
+        fields = '__all__'
+
+
+class ReturnStylistRequestSerializer(serializers.ModelSerializer):
+    stylist = serializers.SlugRelatedField(many=False, read_only=True, slug_field='fullname')
+    requested_by = serializers.SlugRelatedField(many=False, read_only=True, source='created_by', slug_field='name')
+
+    class Meta:
+        model = StylistRequest
+        fields = ('id', 'stylist', 'requested_by', 'status', 'created_at')
+

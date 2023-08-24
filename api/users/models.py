@@ -10,6 +10,7 @@ from django.utils.translation import gettext as _
 from api.core.helper import get_file_path
 
 from api.core.managers import CustomUserManager
+from api.core.models import BaseModel, CharFieldSizes, CreatedByModel
 from api.users.helper import generate_code
 
 
@@ -125,9 +126,28 @@ class UserProfile(models.Model):
     @property
     def name(self):
         return f"{self.first_name} {self.last_name}"
+    
+    def set_stylist(self, stylist):
+        self.stylist = stylist
+        self.save()
 
 
-class Stylist(models.Model):
+class Stylist(BaseModel):
     salon = models.ForeignKey(SalonProfile, on_delete=models.CASCADE, related_name='stylists')
 
     fullname = models.CharField(max_length=150)
+
+
+class StylistRequest(BaseModel, CreatedByModel):
+    class Status(models.TextChoices):
+        PENDING = 'pending', _('Pending Salon approval')
+        APPROVED = 'approved', _('Approved Stylist change request')
+        REJECTED = 'rejected', _('Rejected Stylist change request')
+
+    stylist = models.ForeignKey(Stylist, on_delete=models.CASCADE, related_name='change_requests')
+    salon = models.ForeignKey(SalonProfile, on_delete=models.CASCADE, related_name='stylists_requests')
+    status = models.CharField(max_length=CharFieldSizes.EXTRA_SMALL, choices=Status.choices, default=Status.PENDING)
+
+    class Meta:
+        ordering = ['salon', 'created_at']
+        db_table = 'users_stylist_change_requests'

@@ -68,7 +68,6 @@ APPS = [
     'api.core',
     'api.jwtauth',
     'api.users',
-    'api.salons',
     'api.categories',
     'api.product_types',
     'api.vendors',

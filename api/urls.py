@@ -2,8 +2,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 from api.jwtauth.views import RegistrationViewSet
-from api.users.views import partial_update, UserViewSets
-from api.salons.views import SalonViewSets, StylistViewSets
+from api.users.views import partial_update, UserViewSets, SalonViewSets, StylistViewSets, StylistChangeRequestViewSets
 from api.product_types.views import ProductTypeViewSet
 from api.categories.views import CategoryViewSet
 from api.vendors.views import VendorViewSet
@@ -18,6 +17,7 @@ router.register(r'register', RegistrationViewSet, basename='register')
 router.register(r'users/rewards', RewardViewSets, basename='user_rewards')
 router.register(r'users', UserViewSets, basename='users')
 
+router.register(r'salons/stylists-requests', StylistChangeRequestViewSets, basename='stylists_requests')
 router.register(r'salons/stylists', StylistViewSets, basename='stylists')
 router.register(r'salons', SalonViewSets, basename='salons')
 

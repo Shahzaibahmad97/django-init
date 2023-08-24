@@ -8,18 +8,19 @@ from django.utils import timezone
 from django.utils.timezone import now
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
+from rest_framework.mixins import ListModelMixin
 from rest_framework.decorators import api_view, action, permission_classes
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
-from api.core.constants import DeviceType, Status
-from api.core.mixin import GenericDotsViewSet, ListDotsModelMixin
-from api.core.serializer import SuccessResponseSerializer, UserProfileBuilderSerializer
+from api.core.mixin import DotsModelViewSet, GenericDotsViewSet, ListDotsModelMixin, UpdateDotsModelMixin
+from api.core.permissions import IsSalon, IsUser
+from api.core.serializer import SuccessResponseSerializer
 from api.core.utils import DotsValidationError
 from api.jwtauth.helpers import send_confirmation_email
-from api.users.models import SalonProfile, Stylist, User, UserProfile
-from api.users.serializers import ConfirmUserSerializer, ReferralUserSerializer, ReturnShortUserProfileSerializer, ReturnUserMeSerializer, get_update_profile_serializer_class_by_role, get_return_profile_serializer_by_role
+from api.users.models import SalonProfile, Stylist, StylistRequest, User, UserProfile
+from api.users.serializers import ConfirmUserSerializer, ReferralUserSerializer, ReturnSalonProfileSerializer, ReturnShortUserProfileSerializer, ReturnUserMeSerializer, get_update_profile_serializer_class_by_role, get_return_profile_serializer_by_role, StylistRequestSerializer, ReturnStylistRequestSerializer, ReturnShortSalonProfileSerializer, StylistSerializer, ReturnStylistSerializer
 
 user_confirmation_response = openapi.Response('User confirmation', SuccessResponseSerializer)
 
@@ -67,3 +68,78 @@ class UserViewSets(GenericDotsViewSet):
         #     return User.objects.none()
         return super().get_queryset()
 
+
+# salon related viewsets starts from here
+class SalonViewSets(DotsModelViewSet):
+    serializer_class = ReturnSalonProfileSerializer
+    queryset = SalonProfile.objects.all()
+    search_fields = []
+    permission_classes = [IsSalon]
+
+    @action(detail=False, methods=['GET'], serializer_class=ReturnShortSalonProfileSerializer, queryset=SalonProfile.objects.all(),
+            permission_classes=[AllowAny])
+    def get_salons(self, request, *args, **kwargs):
+        return ListDotsModelMixin.list_dropdown(self, request, *args, **kwargs)
+
+    @action(detail=True, methods=['GET'], url_path='stylist',
+            serializer_class=ReturnStylistSerializer, queryset=SalonProfile.objects.all(),
+            permission_classes=[AllowAny])
+    def get_salon_stylists(self, request, pk, *args, **kwargs):
+        salon = get_object_or_404(SalonProfile, pk=pk)
+        self.queryset = salon.stylists.all()
+        return ListDotsModelMixin.list_dropdown(self, request, *args, **kwargs)
+    
+    @action(detail=False, methods=['POST'], url_path='request-stylist/(?P<stylist_id>[0-9]+)',
+        serializer_class=SuccessResponseSerializer, queryset=StylistRequest.objects.all(),
+        permission_classes=[IsUser])
+    def request_stylist(self, request, stylist_id, *args, **kwargs):
+        stylist = get_object_or_404(Stylist, pk=stylist_id)
+        
+        if self.request.user.profile.salon_id != stylist.salon_id:
+            raise DotsValidationError('Cannot select stylist from another salon. Please change your salon first.')
+        if self.request.user.profile.stylist_id == stylist.id:
+            raise DotsValidationError('Stylist already selected')
+        
+        StylistRequest.objects.create(stylist=stylist, salon_id=stylist.salon_id, created_by=self.request.user)
+        return Response(SuccessResponseSerializer({'message': 'Stylist change request made successfully'}).data)
+
+    def get_queryset(self):
+        return super().get_queryset()
+
+
+class StylistViewSets(DotsModelViewSet):
+    serializer_class = ReturnStylistSerializer
+    serializer_create_class = StylistSerializer
+    queryset = Stylist.objects.all()
+    permission_classes = [IsSalon]
+
+    def perform_create(self, serializer):
+        serializer.validated_data['salon'] = self.request.user.profile
+        return super().perform_create(serializer)
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        
+        return queryset.filter(salon_id=self.request.user.profile.id)
+
+
+class StylistChangeRequestViewSets(GenericDotsViewSet, ListModelMixin, UpdateDotsModelMixin):
+    serializer_class = ReturnStylistRequestSerializer
+    serializer_create_class = StylistRequestSerializer
+    queryset = StylistRequest.objects.all().prefetch_related('stylist', 'stylist__salon', 'created_by')
+    permission_classes = [IsSalon]
+    filterset_fields = {
+        'status': ['exact', 'in']
+    }
+
+    def perform_update(self, serializer):
+        instance = super().perform_update(serializer)
+        # assign the stylist to the user if the request is approved
+        if instance.status == StylistRequest.Status.APPROVED:
+            instance.created_by.profile.set_stylist(instance.stylist)
+
+        return instance
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(stylist__salon__id=self.request.user.profile.id)
